@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import {
     Box,
     Typography,
@@ -8,36 +8,199 @@ import {
     Divider,
 } from "@mui/material";
 import { Icon } from "@iconify/react";
+import gsap from "gsap";
 
 import styles from "./auth.module.scss";
-import { socialProviders } from "./socialProviders";
+import { id, socialProviders, type SocialProvider } from "./socialProviders";
+import { supabase } from "../../config/auth/supabaseClient";
 
 const Auth: React.FC = () => {
     const [open, setOpen] = useState(true);
 
-    const handleSocialLogin = (provider: string) => {
-        console.log(`Login with ${provider}`);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
+    const subtitleRef = useRef<HTMLParagraphElement>(null);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const decorRef = useRef<HTMLDivElement>(null);
+
+    useLayoutEffect(() => {
+        const ctx = gsap.context(() => {
+            const tl = gsap.timeline();
+
+            // Background shapes entrance
+            if (decorRef.current) {
+                tl.fromTo(
+                    decorRef.current.querySelectorAll(".decorShape"),
+                    {
+                        opacity: 0,
+                        scale: 0.6,
+                        filter: "blur(40px)",
+                    },
+                    {
+                        opacity: 0.15,
+                        scale: 1,
+                        filter: "blur(60px)",
+                        duration: 1.2,
+                        stagger: 0.2,
+                        ease: "power2.out",
+                    },
+                    0
+                );
+            }
+
+            // Title entrance
+            if (titleRef.current) {
+                tl.fromTo(
+                    titleRef.current,
+                    {
+                        opacity: 0,
+                        y: 30,
+                        filter: "blur(8px)",
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        filter: "blur(0px)",
+                        duration: 0.8,
+                        ease: "power3.out",
+                    },
+                    0.2
+                );
+            }
+
+            // Subtitle entrance
+            if (subtitleRef.current) {
+                tl.fromTo(
+                    subtitleRef.current,
+                    {
+                        opacity: 0,
+                        y: 20,
+                        filter: "blur(6px)",
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        filter: "blur(0px)",
+                        duration: 0.8,
+                        ease: "power3.out",
+                    },
+                    0.35
+                );
+            }
+
+            // Card entrance
+            if (cardRef.current) {
+                tl.fromTo(
+                    cardRef.current,
+                    {
+                        opacity: 0,
+                        y: 35,
+                        scale: 0.96,
+                    },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 0.8,
+                        ease: "back.out(1.2)",
+                    },
+                    0.45
+                );
+            }
+
+            // Continuous floating decoration animation
+            gsap.to(".floatingDecor", {
+                y: -15,
+                rotation: 6,
+                duration: 4.5,
+                repeat: -1,
+                yoyo: true,
+                ease: "sine.inOut",
+                stagger: 0.4,
+            });
+        }, containerRef);
+
+        return () => ctx.revert();
+    }, []);
+
+    const handleSocialLogin = async (provider: SocialProvider["id"]) => {
+        switch (provider) {
+            case id.GOOGLE:
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: id.GOOGLE
+                });
+
+                if (error) {
+                    console.error("Login error:", error.message);
+                }
+                break;
+            case id.FACEBOOK:
+                console.log("Login with Facebook");
+                break;
+            case id.MICROSOFT:
+                console.log("Login with Microsoft");
+                break;
+            case id.GITHUB:
+                console.log("Login with Github");
+                break;
+            case id.LINKEDIN:
+                console.log("Login with LinkedIn");
+                break;
+            default: {
+                console.log(provider);
+            }
+        }
     };
 
     return (
-        <Box className={styles.container}>
-            <Box className={styles.content}>
-                <Typography className={styles.title}>Welcome</Typography>
+        <Box ref={containerRef} className={styles.container}>
+            {/* Background Decorative Shapes */}
+            <Box ref={decorRef} className={styles.decor}>
+                <Box className={`${styles.decorShape} ${styles.shape1} decorShape floatingDecor`} />
+                <Box className={`${styles.decorShape} ${styles.shape2} decorShape floatingDecor`} />
+            </Box>
 
-                <Typography className={styles.subtitle}>
-                    Welcome! Please enter your details.
+            <Box className={styles.content}>
+                <Typography
+                    ref={titleRef}
+                    variant="h3"
+                    className={styles.title}
+                >
+                    Welcome Back
                 </Typography>
 
-                <Paper elevation={0} className={styles.socialCard}>
+                <Typography
+                    ref={subtitleRef}
+                    className={styles.subtitle}
+                >
+                    Connect with one of our secure social providers to proceed.
+                </Typography>
+
+                <Paper
+                    ref={cardRef}
+                    elevation={0}
+                    className={styles.socialCard}
+                >
                     <Box
                         className={styles.header}
                         onClick={() => setOpen((prev) => !prev)}
+                        role="button"
+                        aria-expanded={open}
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                setOpen((prev) => !prev);
+                            }
+                        }}
                     >
                         <Typography className={styles.headerTitle}>
-                            Sign up with your social account
+                            Sign in with your social account
                         </Typography>
 
-                        <IconButton size="small">
+                        <IconButton
+                            size="small"
+                            aria-label={open ? "Collapse list" : "Expand list"}
+                        >
                             <Icon
                                 icon={
                                     open
@@ -53,8 +216,15 @@ const Auth: React.FC = () => {
                         {socialProviders.map((provider, index) => (
                             <React.Fragment key={provider.id}>
                                 <Box
-                                    className={styles.socialItem}
+                                    className={`${styles.socialItem} ${styles[provider.id]}`}
                                     onClick={() => handleSocialLogin(provider.id)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" || e.key === " ") {
+                                            handleSocialLogin(provider.id);
+                                        }
+                                    }}
                                 >
                                     <Box className={styles.iconWrapper}>
                                         <Icon icon={provider.icon} width={28} />

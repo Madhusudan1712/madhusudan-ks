@@ -1,32 +1,42 @@
+export const id = {
+    GOOGLE: "google",
+    FACEBOOK: "facebook",
+    MICROSOFT: "microsoft",
+    GITHUB: "github",
+    LINKEDIN: "linkedin"
+} as const;
+
+export type SocialProviderId = typeof id[keyof typeof id];
+
 export interface SocialProvider {
-    id: string;
+    id: SocialProviderId;
     label: string;
     icon: string;
 }
 
 export const socialProviders: SocialProvider[] = [
     {
-        id: "google",
+        id: id.GOOGLE,
         label: "Continue with Google",
         icon: "logos:google-icon",
     },
     {
-        id: "facebook",
+        id: id.FACEBOOK,
         label: "Continue with Facebook",
         icon: "logos:facebook",
     },
     {
-        id: "microsoft",
+        id: id.MICROSOFT,
         label: "Continue with Microsoft",
         icon: "logos:microsoft-icon",
     },
     {
-        id: "github",
+        id: id.GITHUB,
         label: "Continue with Github",
         icon: "mdi:github",
     },
     {
-        id: "linkedin",
+        id: id.LINKEDIN,
         label: "Continue with LinkedIn",
         icon: "logos:linkedin-icon",
     },
