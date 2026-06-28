@@ -1,6 +1,6 @@
 import './App.css'
 import { Box } from "@mui/material";
-import NavsAndTabs from "./components/common/navBarTabs/NavsBarTabs";
+import NavAndTabs from "./components/navBarTabs/NavBarTabs";
 import AppRoutes from "./app/AppRoutes";
 import AppFooter from "./components/common/footer/AppFooter";
 
@@ -13,7 +13,7 @@ function App() {
         minHeight: '100vh',
       }}
     >
-      <NavsAndTabs />
+      <NavAndTabs />
       <Box component="main" sx={{ flex: 1 }}>
         <AppRoutes />
       </Box>

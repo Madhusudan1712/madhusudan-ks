@@ -1,4 +1,4 @@
-import AppButton from '../../../button/AppButton';
+import AppButton from '../../../common/button/AppButton';
 import styles from './logoutBtn.module.scss';
 import LogoutIcon from '@mui/icons-material/Logout';
 

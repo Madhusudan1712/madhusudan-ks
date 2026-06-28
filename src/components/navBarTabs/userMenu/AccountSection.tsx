@@ -20,7 +20,7 @@ import Logout from "@mui/icons-material/Logout";
 import Settings from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
 import { useState } from "react";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 const AccountSection = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");

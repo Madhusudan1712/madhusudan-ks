@@ -13,8 +13,9 @@ import { useState } from "react";
 import styles from "./navBarTabs.module.scss";
 import AppTitle from "./components/appTitle/AppTitle.tsx";
 import AccountSection from "./userMenu/AccountSection.tsx";
+import { Icon } from "@iconify/react";
 
-const NavsBarTabs = () => {
+const NavBarTabs = () => {
   const location = useLocation();
   const currentPath = location.pathname === "/" ? "/stream" : location.pathname;
 
@@ -48,7 +49,8 @@ const NavsBarTabs = () => {
                 className={`${styles["drawer-link"]} ${isActive ? styles.active : ""
                   }`}
               >
-                {tab.label}
+                {tab.icon && <Icon icon={tab.icon} className={styles["tab-icon"]} />}
+                <span>{tab.label}</span>
               </Link>
             );
           })}
@@ -74,7 +76,8 @@ const NavsBarTabs = () => {
             to={tab.path}
             className={`${styles["tab-link"]} ${isActive ? styles.active : ""}`}
           >
-            {tab.label}
+            {tab.icon && <Icon icon={tab.icon} className={styles["tab-icon"]} />}
+            <span>{tab.label}</span>
           </Link>
         );
       })}
@@ -94,4 +97,4 @@ const NavsBarTabs = () => {
   );
 };
 
-export default NavsBarTabs;
+export default NavBarTabs;
